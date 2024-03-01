@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import cv2
 import numpy as np
+import argparse
+from pprint import pprint
 
 from utils.circle_utils import CircleContourUtils
 from dataloader import OrbitImageDataset, ImageProcessor, LabelProcessor
@@ -107,12 +109,19 @@ def visualize_dataloader(dataset, num_images=None, image_ids=None, debug=False, 
             visualize_image(images[0], labels_and_points[0], target_icon[0], target_digit[0], debug, input_filename=f"image_{i}")
 
 if __name__ == "__main__":
-    # Define the path to your dataset
-    dataset_path = os.path.join(os.path.dirname(os.getcwd()), 'data', 'orbits/train')
+    parser = argparse.ArgumentParser(description='Visualize Dataloader')
+    parser.add_argument('--dataset_path', type=str, default=os.path.join(os.path.dirname(os.getcwd()), 'data', 'orbits/train'), help='Path to the dataset')
+    parser.add_argument('--num_images', type=int, default=5, help='Number of images to visualize')
+    parser.add_argument('--debug', action='store_true', help='Print detailed information')
+    parser.add_argument('--visualize', action='store_true', help='Visualize the data')
+
+    args = parser.parse_args()
 
     # Initialize dataset and dataloader
-    dataset = OrbitImageDataset(dataset_path)
+    dataset = OrbitImageDataset(args.dataset_path)
     dataloader = DataLoader(dataset, batch_size=64, shuffle=True, collate_fn=collate_fn)
 
     # Call the function with debug=True and visualize=True to print detailed information and visualize the data
-    visualize_dataloader(dataset, num_images=5, debug=False, visualize=True)
+    visualize_dataloader(dataset, num_images=args.num_images, debug=args.debug, visualize=args.visualize)
+
+    # python vis_gt.py --dataset_path path/to/dataset --num_images 10 --debug --visualize
